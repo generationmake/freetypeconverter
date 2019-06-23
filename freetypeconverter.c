@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 	int error=0;
 	int i=0,j=0;
 	int baseline=12, fontsize=16, heightbyte=2, debug=0;
-	int fontpointer=0, namepointer=0;
+	int fontpointer=0, namepointer=0, printhelp=0;
 	char fontname[200]={0};
 	char fontfilename[200]={0};
 	FILE *fp;
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 			i++;
 			fontsize=atoi(argv[i]);
 		}
-		if(strncmp(argv[i], "-h", 2)==0)	// height in bytes
+		if(strncmp(argv[i], "-g", 2)==0)	// height in bytes
 		{
 			i++;
 			heightbyte=atoi(argv[i]);
@@ -130,9 +130,25 @@ int main(int argc, char* argv[])
 		{
 			debug=1;
 		}
+		if(strncmp(argv[i], "-h", 2)==0)	// print help
+		{
+			printhelp=1;
+		}
 	}
 
 	printf("%s\n",versionstring);
+	if(printhelp==1)
+	{
+		printf("usage: \n");
+		printf("-f <path to file>      path to file with font\n");
+		printf("-n <name>              name for header file with font and name of font constant\n");
+		printf("-s <number>            font-size\n");
+		printf("-b <number>            baseline for the font in pixels from top\n");
+		printf("-g <number>            height of font in bytes for generated file\n");
+		printf("-d                     printf debug messages\n");
+		printf("-h                     print this help\n");
+		exit(1);
+	}
 	if(fontpointer==0)	// check if font was defined
 	{
 		printf("define font file!\n");
