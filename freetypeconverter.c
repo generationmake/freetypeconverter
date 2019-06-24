@@ -7,7 +7,7 @@ FT_Library library;
 FT_Face face;
 unsigned int rows_max=0;
 unsigned int width_max=0;
-unsigned int buffer[40]={0};
+unsigned long long int buffer[40]={0};
 
 char *strlwr(char *str)
 {
@@ -75,7 +75,7 @@ void draw_char(char c, int baseline, int debug)
 				{
 //					if(k&x) printf("X");
 //					else printf(".");
-					if(k&x) buffer[width_count]|=(1<<(i+baseline-top_offset));
+					if(k&x) buffer[width_count]|=(unsigned long long int)(1UL<<(i+baseline-top_offset));
 			//		printf("%02x! ",(unsigned char) k);
 				}
 				k=k>>1;		// move one pixel right
@@ -97,7 +97,10 @@ int main(int argc, char* argv[])
 	char fontfilename[200]={0};
 	FILE *fp;
 
-	const char *versionstring={"freetype converter 0.1 - 2019-06-23"};
+	int start_char=0x20;
+	int stop_char=0x7e;
+
+	const char *versionstring={"freetype converter 0.1 - 2019-06-24"};
 
 	for(i=1;i<argc;i++)
 	{
@@ -166,6 +169,8 @@ int main(int argc, char* argv[])
 		sprintf(fontfilename,"%s.h",argv[namepointer]);
 		strlwr(fontfilename);
 	}
+	if(heightbyte>8) heightbyte=8;	// check borders for heightbyte
+	if(heightbyte<1) heightbyte=1;	// check borders for heightbyte
 	printf("Font:            %s\n",argv[fontpointer]);
 	printf("Font size:       %i\n",fontsize);
 	printf("baseline:        %i\n",baseline);
@@ -208,9 +213,6 @@ int main(int argc, char* argv[])
 		exit(-1);
 	}
 
-	int start_char=0x20;
-	int stop_char=0x7e;
-
 	for(char z=start_char; z<=stop_char; z++)
 	{
 		draw_char(z,baseline, debug);
@@ -240,7 +242,7 @@ int main(int argc, char* argv[])
 		{
 			for(i=0; i<(signed)width_max; i++) 
 			{
-				fprintf(fp,"0x%02X",(unsigned char) (((buffer[i])>>(j*8))&(0x000000FF)));
+				fprintf(fp,"0x%02X",(unsigned char) (((buffer[i])>>(j*8))&(0x00000000000000FF)));
 				if(i<((signed)width_max-1)) fprintf(fp,",");
 			}
 			if(j<(heightbyte-1)||z!=(stop_char)) fprintf(fp,",");
